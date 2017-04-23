@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>Mapping my runs</title>
+  </head>
+
+  <body>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css" />
+    <div id="map" style="width: 600px; height: 400px"></div>
+
+    <script>
+    var map = L.map('map').setView([51.36,-0.2], 13);
+    L.tileLayer(
+        'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+        }).addTo(map);
+
+    var encodedRoutes = {{ runs|safe }}
+
+    for (let encoded of encodedRoutes) {
+      var coordinates = L.Polyline.fromEncoded(encoded).getLatLngs();
+
+      L.polyline(
+          coordinates,
+          {
+              color: 'red',
+              weight: 2,
+              opacity: .7,
+              lineJoin: 'round'
+          }
+      ).addTo(map);
+    }
+
+    </script>
+
+  </body>
+
+</html>
