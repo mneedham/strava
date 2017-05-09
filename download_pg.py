@@ -17,9 +17,13 @@ with psycopg2.connect("dbname=strava user=markneedham") as conn:
                 break
             else:
                 for activity in response:
-                    r = requests.get("https://www.strava.com/api/v3/activities/{0}?include_all_efforts=true".format(activity["id"]), headers = headers)
-                    json_response = r.json()
-                    print("importing {0}".format(activity["id"]))
-                    cur.execute("INSERT INTO runs (id, data) VALUES(%s, %s)", (activity["id"], json.dumps(json_response)))
-                    conn.commit()
+                    cur.execute("select exists(select 1 from runs where id=%s)", (activity["id"],))
+                    exists = [row[0] for row in cur.fetchall()][0]
+                    
+                    if not exists:
+                        r = requests.get("https://www.strava.com/api/v3/activities/{0}?include_all_efforts=true".format(activity["id"]), headers = headers)
+                        json_response = r.json()
+                        print("importing {0}".format(activity["id"]))
+                        cur.execute("INSERT INTO runs (id, data) VALUES(%s, %s)", (activity["id"], json.dumps(json_response)))
+                        conn.commit()
                 page += 1

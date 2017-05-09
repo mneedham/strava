@@ -23,10 +23,9 @@ with psycopg2.connect("dbname=strava user=markneedham") as conn:
     for chart in charts:
         with conn.cursor() as cur:
             cur.execute(chart["query"])
-
             values = [row[1] for row in cur.fetchall()]
 
         line_chart = pygal.Line(range = (0, ceil(max(values))))
         line_chart.title = chart["title"]
         line_chart.add('Speed', values)
-        line_chart.render_to_file(chart["fileName"])
+        line_chart.render_to_file("images/{0}".format(chart["fileName"]))
