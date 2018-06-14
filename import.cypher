@@ -38,7 +38,7 @@ call apoc.periodic.commit("
 
 
 CALL apoc.periodic.iterate(
-  "MATCH (run:Run)
+  "MATCH (run:Run) WHERE not (run)-[:DISTANCE_EFFORT]->()
    RETURN run",
   "WITH run, 'https://www.strava.com/api/v3/activities/' + run.id + '?include_all_efforts=true' AS uri
    CALL apoc.load.jsonParams(uri,{Authorization:$stravaToken},null)
